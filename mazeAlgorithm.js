@@ -4,33 +4,126 @@ $(function () {
 	var mazeGenerator = function (dimensions) {
 
 		var _maze = [];
+		var _frontierCells = [];
+		// var _mazeCells = {};
 		for (let ii = 0; ii < dimensions; ii = ii + 1) {
 			_maze.push([]);
 			for (let jj = 0; jj < dimensions; jj = jj + 1) {
 				_maze[ii].push({
-					topW: false,
-					rightW: false,
-					bottomW: false,
-					leftW: false,
-					color: 'teal'
+					topW: true,
+					rightW: true,
+					bottomW: true,
+					leftW: true,
+					partOfMaze_p: false
 				});
-
-				// initialize borders
-				if (ii == 0) {
-					_maze[ii][jj].topW = true;
-				}
-				if (jj == 0) {
-					_maze[ii][jj].leftW = true;
-				}
-				if (ii == dimensions-1) {
-					_maze[ii][jj].bottomW = true;
-				}
-				if (jj == dimensions-1) {
-					_maze[ii][jj].rightW = true;
-				}
 			}
 		}
-		buildMaze(0, 0, dimensions-1,dimensions-1);
+
+		var x = getRandomNumberInInterval(0, _maze.length-1);
+		var y = getRandomNumberInInterval(0, _maze[0].length-1);
+		_maze[x][y].partOfMaze_p = true;
+		createFrontier(x, y);
+		console.log('frontier: ', _frontierCells);
+		console.log ('x, y: ', x, ',', y);
+		while (_frontierCells.length) {
+			// select a random _frontierCell
+			var fCellIndex = getRandomNumberInInterval(0, _frontierCells.length-1);
+			x = _frontierCells[fCellIndex].split(',')[0];
+			y = _frontierCells[fCellIndex].split(',')[1];
+
+			var neighbors = getNeighborsPartOfMaze(x, y);
+			console.log("neighbors: ", neighbors, ' - x,y: ', x,y);
+
+			var neighborIndex = getRandomNumberInInterval(0, neighbors.length-1);
+			var fx = neighbors[neighborIndex].split(',')[0]
+			var fy = neighbors[neighborIndex].split(',')[1]
+
+			_maze[x][y].partOfMaze_p = true;
+			_frontierCells.splice(fCellIndex, 1);
+
+			if (x < fx) {
+				_maze[x][y].bottomW = false;
+				_maze[fx][fy].topW = false;
+			}
+			else if (x > fx) {
+				_maze[x][y].topW = false;
+				_maze[fx][fy].bottomW = false;
+			}
+			else if (y < fy) {
+				_maze[x][y].rightW = false;
+				_maze[fx][fy].leftW = false;
+			}
+			else if (y > fy) {
+				_maze[x][y].leftW = false;
+				_maze[fx][fy].rightW = false;
+			}
+
+
+			createFrontier(x, y);
+		}
+
+		function createFrontier(x, y) {
+			x = parseInt(x);
+			y = parseInt(y);
+			if (_maze[x+1] && _maze[x+1][y] && !_maze[x+1][y].partOfMaze_p) {
+				if (!valueInArray(_frontierCells, (x+1)+','+y)) {
+					_frontierCells.push((x+1)+','+y);
+				}
+			}
+			if (_maze[x-1] && _maze[x-1][y] && !_maze[x-1][y].partOfMaze_p) {
+				if (!valueInArray(_frontierCells, (x-1)+','+y)) {
+					_frontierCells.push((x-1)+','+y);
+				}
+			}
+			if (_maze[x][y+1] && !_maze[x][y+1].partOfMaze_p) {
+				if (!valueInArray(_frontierCells, x+','+(y+1))) {
+					_frontierCells.push(x+','+(y+1));
+				}
+			}
+			if (_maze[x][y-1] && !_maze[x][y-1].partOfMaze_p) {
+				if (!valueInArray(_frontierCells, x+','+(y-1))) {
+					_frontierCells.push(x+','+(y-1));
+				}
+			}
+			return;
+		}
+
+		function valueInArray (arr, val) {
+			if (arr.indexOf(val) >= 0) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+
+		function getNeighborsPartOfMaze(x, y) {
+			var neighborList = [];
+			x = parseInt(x);
+			y = parseInt(y);
+			// console.log(_maze[x+1][y],'_maze[x+1][y]');
+			// console.log(_maze[x-1][y],'_maze[x-1][y]');
+			// console.log(_maze[x][y+1],'_maze[x][y+1]');
+			// console.log(_maze[x][y-1],'_maze[x][y-1]');
+			if (_maze[x+1] && _maze[x+1][y] && _maze[x+1][y].partOfMaze_p) {
+				neighborList.push((x+1)+','+y);
+			}
+			if (_maze[x-1] && _maze[x-1][y] && _maze[x-1][y].partOfMaze_p) {
+				neighborList.push((x-1)+','+y);
+			}
+			if (_maze[x][y+1] && _maze[x][y+1].partOfMaze_p) {
+				neighborList.push(x+','+(y+1));
+			}
+			if (_maze[x][y-1] && _maze[x][y-1].partOfMaze_p) {
+				neighborList.push(x+','+(y-1));
+			}
+			return neighborList;
+		}
+
+		function getRandomNumberInInterval (a, b) {
+			return Math.floor(Math.random()*(b-a+1)+a);
+		}
+
 		this.getMaze = function () {
 			return _maze;
 		}
@@ -72,89 +165,6 @@ $(function () {
 			}
 		};
 
-		function getOrientation () {
-			var randomNumber = Math.floor(Math.random()*10);
-			var orientation = {};
-			if (randomNumber < 5) {
-				orientation.direction = 'vertical';
-			}
-			else {
-				orientation.direction = 'horizontal';
-			}
-
-			randomNumber = Math.floor(Math.random()*10);
-			if (randomNumber < 5) {
-				if (orientation.direction == 'vertical') {
-					orientation.wallSide = 'left';
-				}
-				else {
-					orientation.wallSide = 'top';
-				}
-			}
-			else {
-				if (orientation.direction == 'vertical') {
-					orientation.wallSide = 'right';
-				}
-				else {
-					orientation.wallSide = 'bottom';
-				}
-			}
-			return orientation;
-		}
-
-		function getRandomNumberInInterval (a, b) {
-			return Math.floor(Math.random()*((b-1)-(a+1)+1)+(a+1));
-		}
-
-		function buildMaze (x1, y1, x2, y2) {
-			if (x1 >= x2 || y1 >= y2) {
-				return;
-			}
-
-			var orientation = getOrientation();
-			// console.log(orientation);
-			if (orientation.direction == 'vertical') {
-				var divideCoord = getRandomNumberInInterval(y1, y2);
-				var spaceCoord = getRandomNumberInInterval(x1, x2);
-
-				for (let ii = x1; ii <= x2; ii = ii + 1) {
-					if (ii != spaceCoord) {
-						_maze[ii][divideCoord][orientation.wallSide + 'W'] = true;
-						
-					} else {_maze[ii][divideCoord].color = 'blue';}
-				}
-
-				if (orientation.wallSide == 'right') {
-					buildMaze(x1, y1, x2, divideCoord);
-					buildMaze(x1, divideCoord+1, x2, y2);
-				}
-				else {
-					buildMaze(x1, y1, x2, divideCoord-1);
-					buildMaze(x1, divideCoord, x2, y2);
-				}
-			}
-			else if (orientation.direction == 'horizontal') {
-				var divideCoord = getRandomNumberInInterval(x1, x2);
-				var spaceCoord = getRandomNumberInInterval(y1, y2);
-
-				for (let jj = y1; jj <= y2; jj = jj + 1) {
-					if (jj != spaceCoord) {
-						_maze[divideCoord][jj][orientation.wallSide + 'W'] = true;
-						
-					} else {_maze[jj][divideCoord].color = 'green';}
-				}
-
-				if (orientation.wallSide == 'bottom') {
-					buildMaze(x1, y1, divideCoord, y2);
-					buildMaze(divideCoord+1, y1, x2, y2);
-				}
-				else {
-					buildMaze(x1, y1, divideCoord-1, y2);
-					buildMaze(divideCoord, y1, x2, y2);
-				}
-			}
-			// console.log(orientation, ' ', divideCoord);
-		}
 	};
 
 	maze = new mazeGenerator(10);
