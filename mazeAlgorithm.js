@@ -5,7 +5,6 @@ $(function () {
 
 		var _maze = [];
 		var _frontierCells = [];
-		// var _mazeCells = {};
 		for (let ii = 0; ii < dimensions; ii = ii + 1) {
 			_maze.push([]);
 			for (let jj = 0; jj < dimensions; jj = jj + 1) {
@@ -14,10 +13,19 @@ $(function () {
 					rightW: true,
 					bottomW: true,
 					leftW: true,
-					partOfMaze_p: false
+					partOfMaze_p: false,
+					isStart_p: false,
+					ifEnd_p: false,
+					visited_p: false,
+					color: 'teal'
 				});
 			}
 		}
+		_maze[0][0].isStart_p = true;
+		_maze[0][0].color = 'green';
+		_maze[0][0].visited_p = true;
+		_maze[dimensions-1][dimensions-1].isEnd_p = true;
+		_maze[dimensions-1][dimensions-1].color = 'red';
 
 		var x = getRandomNumberInInterval(0, _maze.length-1);
 		var y = getRandomNumberInInterval(0, _maze[0].length-1);
@@ -28,15 +36,15 @@ $(function () {
 		while (_frontierCells.length) {
 			// select a random _frontierCell
 			var fCellIndex = getRandomNumberInInterval(0, _frontierCells.length-1);
-			x = _frontierCells[fCellIndex].split(',')[0];
-			y = _frontierCells[fCellIndex].split(',')[1];
+			x = parseInt(_frontierCells[fCellIndex].split(',')[0]);
+			y = parseInt(_frontierCells[fCellIndex].split(',')[1]);
 
 			var neighbors = getNeighborsPartOfMaze(x, y);
 			console.log("neighbors: ", neighbors, ' - x,y: ', x,y);
 
 			var neighborIndex = getRandomNumberInInterval(0, neighbors.length-1);
-			var fx = neighbors[neighborIndex].split(',')[0]
-			var fy = neighbors[neighborIndex].split(',')[1]
+			var fx = parseInt(neighbors[neighborIndex].split(',')[0]);
+			var fy = parseInt(neighbors[neighborIndex].split(',')[1]);
 
 			_maze[x][y].partOfMaze_p = true;
 			_frontierCells.splice(fCellIndex, 1);
@@ -101,10 +109,7 @@ $(function () {
 			var neighborList = [];
 			x = parseInt(x);
 			y = parseInt(y);
-			// console.log(_maze[x+1][y],'_maze[x+1][y]');
-			// console.log(_maze[x-1][y],'_maze[x-1][y]');
-			// console.log(_maze[x][y+1],'_maze[x][y+1]');
-			// console.log(_maze[x][y-1],'_maze[x][y-1]');
+
 			if (_maze[x+1] && _maze[x+1][y] && _maze[x+1][y].partOfMaze_p) {
 				neighborList.push((x+1)+','+y);
 			}
@@ -167,7 +172,7 @@ $(function () {
 
 	};
 
-	maze = new mazeGenerator(10);
+	maze = new mazeGenerator(100);
 	// console.log(maze.getMaze());
 	maze.printMaze();
 });

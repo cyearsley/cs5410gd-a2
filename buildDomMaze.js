@@ -19,7 +19,7 @@ $(function () {
 				cellStyle += 'border-left: solid black 3px;';
 			}
 			var randomColor = Math.floor(Math.random()*16777215).toString(16);
-			mazeHTML += '<td style="' + cellStyle +'; background-color: ' + 1 + '; width: 100px; height: 50px"></td>';
+			mazeHTML += '<td style="' + cellStyle +'; background-color: ' + localMaze[ii][jj].color + '; width: 100px; height: 50px"></td>';
 		}
 		mazeHTML += '</tr>';
 	}
