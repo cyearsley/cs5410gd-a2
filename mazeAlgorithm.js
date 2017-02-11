@@ -110,15 +110,37 @@ var mazeGenerator = function (dimensions) {
 		}
 
 		var orientation = getOrientation();
+		// console.log(orientation);
 		if (orientation.direction == 'vertical') {
-			var divideCoord = getRandomNumberInInterval(x1, x2);
-			var spaceCoord = getRandomNumberInInterval(y1, y2);
-			for (let ii = y1; ii < y2; ii = ii + 1) {
+			var divideCoord = getRandomNumberInInterval(y1, y2);
+			var spaceCoord = getRandomNumberInInterval(x1, x2);
+
+			for (let ii = x1; ii <= x2; ii = ii + 1) {
 				if (ii != spaceCoord) {
 					_maze[ii][divideCoord][orientation.wallSide + 'W'] = true;
 				}
 			}
+
 			if (orientation.wallSide == 'right') {
+				buildMaze(x1, y1, x2, divideCoord);
+				buildMaze(x1, divideCoord+1, x2, y2);
+			}
+			else {
+				buildMaze(x1, y1, x2, divideCoord-1);
+				buildMaze(x1, divideCoord, x2, y2);
+			}
+		}
+		else if (orientation.direction == 'horizontal') {
+			var divideCoord = getRandomNumberInInterval(x1, x2);
+			var spaceCoord = getRandomNumberInInterval(y1, y2);
+
+			for (let jj = y1; jj <= y2; jj = jj + 1) {
+				if (jj != spaceCoord) {
+					_maze[divideCoord][jj][orientation.wallSide + 'W'] = true;
+				}
+			}
+
+			if (orientation.wallSide == 'bottom') {
 				buildMaze(x1, y1, divideCoord, y2);
 				buildMaze(divideCoord+1, y1, x2, y2);
 			}
@@ -127,24 +149,7 @@ var mazeGenerator = function (dimensions) {
 				buildMaze(divideCoord, y1, x2, y2);
 			}
 		}
-		else {
-			var divideCoord = getRandomNumberInInterval(y1, y2);
-			var spaceCoord = getRandomNumberInInterval(x1, x2);
-			for (let ii = x1; ii < x2; ii = ii + 1) {
-				if (ii !=  spaceCoord) {
-					_maze[divideCoord][ii][orientation.wallSide + 'W'] = true;
-				}
-			}
-			if (orientation.wallSide == 'bottom') {
-				buildMaze(x1, y1, x2, divideCoord);
-				buildMaze(x1, divideCoord+1, x2, y2);
-			}
-			else {
-				buildMaze(x1, y2, x2, divideCoord-1);
-				buildMaze(x1, divideCoord, x2, y2);
-			}
-		}
-		console.log(orientation, ' ', divideCoord);
+		// console.log(orientation, ' ', divideCoord);
 	}
 };
 
