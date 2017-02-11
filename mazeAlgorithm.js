@@ -1,3 +1,5 @@
+'use strict';
+
 var mazeGenerator = function (dimensions) {
 
 	var _maze = [];
