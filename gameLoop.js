@@ -1,4 +1,4 @@
-console.log("loaded!");
+console.log("gameLoop.js loaded!");
 
 // Test to see if a string is an integer
 function isInteger(string) {
@@ -8,6 +8,7 @@ function isInteger(string) {
 // Game Loop OBJECT
 //	This object is not the official game loop.
 var gameLoop = function (initData) {
+	'use strict';
 	var me = this;
 	this.$eventSelector = $(initData.selector);
 	var _data = {
@@ -107,31 +108,3 @@ var gameLoop = function (initData) {
 		}
 	};
 };
-
-
-$(function () {
-	// Create and initialize a new gameLoop object
-	var gl = new gameLoop({selector: '.events-container'});
-	window.requestAnimationFrame(gl.init);
-
-	// cache the form fields
-	var $nameField = $('.event-name-input');
-	var $intervalField = $('.event-interval-input');
-	var $eventFiresField = $('.event-fire-count-input');
-
-	$('.event-button-add').on('click', function () {
-		var formData = {
-			name: $nameField.prop('value'),
-			interval: $intervalField.prop('value'),
-			eventCount: $eventFiresField.prop('value')
-		};
-		
-		// Subscribe the event
-		if (isInteger(formData.interval) && isInteger(formData.eventCount)) {
-			gl.subscribeEvent(formData);
-		}
-		else {
-			alert("The interval and number of event fires need to be positive integers!");
-		}
-	});
-});

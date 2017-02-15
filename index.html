@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+<!-- <!DOCTYPE HTML>
 <html>
 <head>
   <script>var maze = {};</script>
@@ -37,5 +37,42 @@
     </tr>
     </table>
   </div>
+</body>
+</html> -->
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <title>The Maze Game</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+  <script href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link href="master.css" rel="stylesheet" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script src="mazeAlgorithm.js"></script>
+  <script src="graphics.js"></script>
+  <script src="gameLoop.js"></script>
+</head>
+<body>
+  <div class="main-container container">
+    <div class="row">
+      <div class="main-container-col col-lg-6">
+        <div  class="canvas-maze-container" >
+          <canvas id="canvas-main"></canvas>
+        </div>
+      </div>
+      <div class="main-container-col col-lg-6">
+        <div class="nav-container">
+          
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+      $(function () {
+          //
+          var maze = new mazeGenerator(10);
+      })
+  </script>
 </body>
 </html>
