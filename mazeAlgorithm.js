@@ -172,7 +172,7 @@ $(function () {
 
 	};
 
-	maze = new mazeGenerator(100);
+	maze = new mazeGenerator(20);
 	// console.log(maze.getMaze());
 	maze.printMaze();
 });
