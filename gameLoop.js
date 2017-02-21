@@ -8,6 +8,7 @@ function isInteger(string) {
 var Scene = function () {
 	var canvas = $('#canvas-main')[0];
 	var context = canvas.getContext('2d');
+	var displayShortestPath_p = false;
 	context.strokeStyle = "white";
 	CanvasRenderingContext2D.prototype.clear = function() {
         this.save();
@@ -22,6 +23,34 @@ var Scene = function () {
 	this.beginRender = function () {
 		context.clear();
 	};
+
+	this.sceneData = {
+		imageSP1: new Image(),
+		imageSP2: new Image(),
+		imageSP3: new Image()
+	};
+
+	this.sceneData.imageSP1.src = 'shortestPath1.png';
+	this.sceneData.imageSP2.src = 'shortestPath2.png';
+	this.sceneData.imageSP3.src = 'shortestPath3.png';
+
+	this.getDSP = function () {
+		return {'displayShortestPath_p': displayShortestPath_p};
+	}
+
+	function DSP_P (toggle_p) {
+		if (toggle_p) {
+			displayShortestPath_p = !displayShortestPath_p;
+		}
+		else {
+			return displayShortestPath_p;
+		}
+	}
+	window.addEventListener('keydown', function(event) {
+		if (event.key.toLowerCase() == 'p') {
+			DSP_P(true);
+		}
+	});
 
 	this.Player = function (maze, pdata) {
 		var mazeDimensions = maze.length;
@@ -214,6 +243,30 @@ var Scene = function () {
 		}
 	};
 
+	this.drawShortestPath = function (maze, data, width, height) {
+		if (data.displayShortestPath_p) {
+			var mazeDimensions = maze.length;
+			var wallLength = Math.floor(canvas.width/mazeDimensions);
+			for (var ii = 0; ii < maze.length; ii = ii + 1) {
+				for (var jj = 0; jj < maze[0].length; jj = jj + 1) {
+					if (maze[ii][jj].partOfShortestPath_p) {
+						context.save();
+
+						context.drawImage(
+							data['imageSP' + Math.floor(Math.random()*(3-1+1)+1)],
+							ii*wallLength + wallLength/2 - width/2,
+							jj*wallLength + wallLength/2 - height/2,
+							width,
+							height
+						);
+
+						context.restore();
+					}
+				}
+			}
+		}
+	};
+
 	this.beginRender = function () {
 		context.clear();
 	};
@@ -280,6 +333,7 @@ var gameLoop = function (initData) {
 		if (_gameData.mazeStatus.status == 'create') {
 			_gameData.mazeStatus.status = 'render';
 			_gameData.maze = new mazeGenerator(_gameData.mazeStatus.dimensions);
+			_gameData.maze.setShortestPath(_gameData.maze.findShortestPath())
 			console.log(_gameData.maze.findShortestPath());
 			_gameData.scene = new Scene();
 
@@ -304,6 +358,9 @@ var gameLoop = function (initData) {
 		if (_gameData.scene) {
 			_gameData.scene.beginRender();
 			_gameData.scene.drawMaze(_gameData.maze.getMaze());
+
+			var spSpriteDimensions = (_gameData.scene.getCanvasWidthHeight()/_gameData.maze.getMaze().length) - (_gameData.scene.getCanvasWidthHeight()/_gameData.maze.getMaze().length)*.5
+			_gameData.scene.drawShortestPath(_gameData.maze.getMaze(), $.extend(_gameData.scene.sceneData, _gameData.scene.getDSP()), spSpriteDimensions, spSpriteDimensions);
 			_gameData.player.draw();
 		}
 	};
