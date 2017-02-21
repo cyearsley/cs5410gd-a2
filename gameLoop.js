@@ -43,10 +43,15 @@ var Scene = function () {
 		var Key = {
 			_pressed: {},
 			LEFT: 65,
+			LEFT2: 74,
 			UP: 87,
+			UP2: 73,
 			RIGHT: 68,
+			RIGHT2: 76,
 			DOWN: 83,
+			DOWN2: 75,
 			isDown: function(keyCode) {
+				console.log("keycode: ", keyCode);
 			  	return this._pressed[keyCode];
 			},
 			onKeydown: function(event) {
@@ -82,22 +87,64 @@ var Scene = function () {
 		playerImage.src = _data.imageSource;
 
 		this.update = function () {
-			var pCenterX = _data.x+imageWidth;
-			var pCenterY = _data.y+imageHeight;
+			var pCenterX = _data.x+imageWidth/2;
+			var pCenterY = _data.y+imageHeight/2;
 			var cellCenterX = (_data.currentj)*wallLength+(wallLength/2);
 			var cellCenterY = (_data.currenti)*wallLength+(wallLength/2);
-			if (Key.isDown(Key.UP) && !_data.maze[_data.currenti][_data.currentj].topW) {
-				this.move('up');
-			}
-			if (Key.isDown(Key.LEFT) && !_data.maze[_data.currenti][_data.currentj].leftW) {
 
-				this.move('left');
+			if (pCenterX > (_data.currentj+1)*wallLength) {
+				_data.currentj = _data.currentj + 1
+			}	
+			if (pCenterX < (_data.currentj)*wallLength) {
+				_data.currentj = _data.currentj - 1;
 			}
-			if (Key.isDown(Key.DOWN) && !_data.maze[_data.currenti][_data.currentj].bottomW) {
-				this.move('down');
+			if (pCenterY > (_data.currenti+1)*wallLength) {
+				_data.currenti = _data.currenti + 1
+			}	
+			if (pCenterY < (_data.currenti)*wallLength) {
+				_data.currenti = _data.currenti - 1;
 			}
-			if (Key.isDown(Key.RIGHT) && !_data.maze[_data.currenti][_data.currentj].rightW) {
-				this.move('right');
+
+			// Detect whether or not the player is try to move against a wall
+			if (Key.isDown(Key.UP) || Key.isDown(Key.UP2)) {
+				if (!_data.maze[_data.currenti][_data.currentj].topW) {
+					this.move('up');
+				}
+				else {
+					if (pCenterY-(imageWidth/2) > (_data.currenti)*wallLength) {
+						this.move('up');
+					}
+				}
+			}
+			if (Key.isDown(Key.DOWN) || Key.isDown(Key.DOWN2)) {
+				if (!_data.maze[_data.currenti][_data.currentj].bottomW) {
+					this.move('down');
+				}
+				else {
+					if (pCenterY+(imageWidth/2) < (_data.currenti+1)*wallLength) {
+						this.move('down');
+					}
+				}
+			}
+			if (Key.isDown(Key.LEFT) || Key.isDown(Key.LEFT2)) {
+				if (!_data.maze[_data.currenti][_data.currentj].leftW) {
+					this.move('left');
+				}
+				else {
+					if (pCenterX-(imageWidth/2) > (_data.currentj)*wallLength) {
+						this.move('left');
+					}
+				}
+			}
+			if (Key.isDown(Key.RIGHT) || Key.isDown(Key.RIGHT2)) {
+				if (!_data.maze[_data.currenti][_data.currentj].rightW) {
+					this.move('right');
+				}
+				else {
+					if (pCenterX+(imageWidth/2) < (_data.currentj+1)*wallLength) {
+						this.move('right');
+					}
+				}
 			}
 		};
 
