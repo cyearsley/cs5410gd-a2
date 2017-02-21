@@ -23,12 +23,58 @@ var Scene = function () {
 		context.clear();
 	};
 
-	this.Player = function (pdata) {
+	this.Player = function (maze, pdata) {
+		var mazeDimensions = maze.length;
+		var wallLength = Math.floor(canvas.width/mazeDimensions);
+		var imageWidth = 30;
+		var imageHeight = 30;
 		var ready = false;
 		var playerImage = new Image();
 		var _data = $.extend({
-			// some custom properties
+			imageSource: 'playerImage.png',
+			x: wallLength/2-imageWidth/2,
+			y: wallLength/2-imageHeight/2,
+			width: imageWidth,
+			height: imageHeight,
+			maze: maze,
+			currenti: 0,
+			currentj: 0
 		}, pdata);
+		var Key = {
+			_pressed: {},
+			LEFT: 65,
+			UP: 87,
+			RIGHT: 68,
+			DOWN: 83,
+			isDown: function(keyCode) {
+			  	return this._pressed[keyCode];
+			},
+			onKeydown: function(event) {
+			  	this._pressed[event.keyCode] = true;
+			},
+			onKeyup: function(event) {
+				delete this._pressed[event.keyCode];
+			}
+		};
+
+		this.move = function (direction) {
+			console.log("DIRECTION! ", "." + direction + ".");
+			if (direction == 'right') {
+				_data.x += 2;
+			}
+			if (direction == 'down') {
+				_data.y += 2;
+			}
+			if (direction == 'left') {
+				_data.x -= 2;
+			}
+			if (direction == 'up') {
+				_data.y -= 2;
+			}
+		};
+
+		window.addEventListener('keyup', function(event) { Key.onKeyup(event); }, false);
+		window.addEventListener('keydown', function(event) { Key.onKeydown(event); }, false);
 
 		playerImage.onload = function () {
 			ready = true;
@@ -36,11 +82,39 @@ var Scene = function () {
 		playerImage.src = _data.imageSource;
 
 		this.update = function () {
+			var pCenterX = _data.x+imageWidth;
+			var pCenterY = _data.y+imageHeight;
+			var cellCenterX = (_data.currentj)*wallLength+(wallLength/2);
+			var cellCenterY = (_data.currenti)*wallLength+(wallLength/2);
+			if (Key.isDown(Key.UP) && !_data.maze[_data.currenti][_data.currentj].topW) {
+				this.move('up');
+			}
+			if (Key.isDown(Key.LEFT) && !_data.maze[_data.currenti][_data.currentj].leftW) {
 
+				this.move('left');
+			}
+			if (Key.isDown(Key.DOWN) && !_data.maze[_data.currenti][_data.currentj].bottomW) {
+				this.move('down');
+			}
+			if (Key.isDown(Key.RIGHT) && !_data.maze[_data.currenti][_data.currentj].rightW) {
+				this.move('right');
+			}
 		};
 
 		this.draw = function () {
+			if (ready) {
+				context.save();
 
+				context.drawImage(
+					playerImage,
+					_data.x,
+					_data.y,
+					_data.width,
+					_data.height
+				);
+
+				context.restore();
+			}
 		};
 	}
 
@@ -48,7 +122,6 @@ var Scene = function () {
 	this.drawMaze = function (maze) {
 		var mazeDimensions = maze.length;
 		var wallLength = Math.floor(canvas.width/mazeDimensions);
-		console.log("drawing maze! -", maze, "with dimensions: ", mazeDimensions);
 
 		// paint start and ending points
 		//========================================/
@@ -89,6 +162,10 @@ var Scene = function () {
 				}
 			}
 		}
+	};
+
+	this.beginRender = function () {
+		context.clear();
 	};
 };
 
@@ -150,7 +227,12 @@ var gameLoop = function (initData) {
 			_gameData.mazeStatus.status = 'render';
 			_gameData.maze = new mazeGenerator(_gameData.mazeStatus.dimensions);
 			_gameData.scene = new Scene();
+			_gameData.player = new _gameData.scene.Player(_gameData.maze.getMaze());
+			
 			_gameData.scene.init();
+		}
+		if (_gameData.player) {
+			_gameData.player.update();
 		}
 	};
 
@@ -160,8 +242,11 @@ var gameLoop = function (initData) {
 	//
 	// ========================================================= //
 	var _render = function () {
-		if (_gameData.mazeStatus.status == 'render') {
+		
+		if (_gameData.scene) {
+			_gameData.scene.beginRender();
 			_gameData.scene.drawMaze(_gameData.maze.getMaze());
+			_gameData.player.draw();
 		}
 	};
 };
