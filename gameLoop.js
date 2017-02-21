@@ -47,16 +47,16 @@ var Scene = function () {
 	//NOTE: the drawMaze assumes the canvas is a perfect square
 	this.drawMaze = function (maze) {
 		var mazeDimensions = maze.length;
-		var printDimensions = Math.floor(canvas.width/mazeDimensions);
+		var wallLength = Math.floor(canvas.width/mazeDimensions);
 		console.log("drawing maze! -", maze, "with dimensions: ", mazeDimensions);
 
 		// paint start and ending points
 		//========================================/
 		var prevfillStyle = context.fillStyle;
 		context.fillStyle = "green";
-		context.fillRect(0, 0, printDimensions, printDimensions);
+		context.fillRect(0, 0, wallLength, wallLength);
 		context.fillStyle = "red";
-		context.fillRect(canvas.width-printDimensions, canvas.width-printDimensions, canvas.width, canvas.width);
+		context.fillRect(canvas.width-wallLength, canvas.width-wallLength, canvas.width, canvas.width);
 		context.fillStyle = prevfillStyle;
 		//========================================/
 
@@ -64,26 +64,26 @@ var Scene = function () {
 			for (let jj = 0; jj < mazeDimensions; jj = jj + 1) {
 				if (maze[ii][jj].topW) {
 					context.beginPath();
-					context.moveTo(jj*(printDimensions), ii*printDimensions);
-					context.lineTo((jj+1)*printDimensions, ii*printDimensions);
+					context.moveTo(jj*(wallLength), ii*wallLength);
+					context.lineTo((jj+1)*wallLength, ii*wallLength);
 					context.stroke();
 				}
 				if (maze[ii][jj].rightW) {
 					context.beginPath();
-					context.moveTo((jj+1)*(printDimensions), ii*printDimensions);
-					context.lineTo((jj+1)*printDimensions, (ii+1)*printDimensions);
+					context.moveTo((jj+1)*(wallLength), ii*wallLength);
+					context.lineTo((jj+1)*wallLength, (ii+1)*wallLength);
 					context.stroke();
 				}
 				if (maze[ii][jj].bottomW) {
 					context.beginPath();
-					context.moveTo((jj)*(printDimensions), (ii+1)*printDimensions);
-					context.lineTo((jj+1)*printDimensions, (ii+1)*printDimensions);
+					context.moveTo((jj)*(wallLength), (ii+1)*wallLength);
+					context.lineTo((jj+1)*wallLength, (ii+1)*wallLength);
 					context.stroke();
 				}
 				if (maze[ii][jj].leftW) {
 					context.beginPath();
-					context.moveTo((jj)*(printDimensions), (ii)*printDimensions);
-					context.lineTo((jj)*printDimensions, (ii+1)*printDimensions);
+					context.moveTo((jj)*(wallLength), (ii)*wallLength);
+					context.lineTo((jj)*wallLength, (ii+1)*wallLength);
 					context.stroke();
 				}
 			}
