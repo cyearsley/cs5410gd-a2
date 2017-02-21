@@ -71,23 +71,6 @@ var mazeGenerator = function (dimensions) {
 		createFrontier(x, y);
 	}
 
-	this.parsePath = function (currentPath, dimensions) {
-		var pathFound_p = false;
-		var pathCache = [];
-		for (var ii = 0; ii < currentPath.legnth; ii = ii + 1) {
-			if (parseInt(currentPath[ii].split(',')[0])+1 == dimensions && parseInt(currentPath[ii].split(',')[1])+1 == dimensions) {
-				var startIndex = ii;
-			}
-		}
-		for (var ii = startIndex; ii > -1; ii = ii + 1) {
-			for (var jj = ii; jj > -1; jj = jj - 1) {
-				var possibleChoice = [];
-				var pointf1 = parseInt(currentPath[ii].split(',')[0]);
-				var pointf1 = parseInt(currentPath[ii].split(',')[1]);
-			}
-		}
-	};
-
 	this.findShortestPath = function(x=0, y=0, currentPath=[]) {
 		if (_maze[x][y].isEnd_p) {
 			currentPath.push(x + ',' + y);
