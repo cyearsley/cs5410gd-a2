@@ -28,6 +28,10 @@ var Scene = function () {
 		var wallLength = Math.floor(canvas.width/mazeDimensions);
 		var imageWidth = 30;
 		var imageHeight = 30;
+		if (pdata) {
+			imageWidth = pdata.width;
+			imageHeight = pdata.height;
+		}
 		var ready = false;
 		var playerImage = new Image();
 		var _data = $.extend({
@@ -38,7 +42,8 @@ var Scene = function () {
 			height: imageHeight,
 			maze: maze,
 			currenti: 0,
-			currentj: 0
+			currentj: 0,
+			speed: imageWidth*.1
 		}, pdata);
 		var Key = {
 			_pressed: {},
@@ -51,7 +56,6 @@ var Scene = function () {
 			DOWN: 83,
 			DOWN2: 75,
 			isDown: function(keyCode) {
-				console.log("keycode: ", keyCode);
 			  	return this._pressed[keyCode];
 			},
 			onKeydown: function(event) {
@@ -63,18 +67,17 @@ var Scene = function () {
 		};
 
 		this.move = function (direction) {
-			console.log("DIRECTION! ", "." + direction + ".");
 			if (direction == 'right') {
-				_data.x += 2;
+				_data.x += _data.speed;
 			}
 			if (direction == 'down') {
-				_data.y += 2;
+				_data.y += _data.speed;
 			}
 			if (direction == 'left') {
-				_data.x -= 2;
+				_data.x -= _data.speed;
 			}
 			if (direction == 'up') {
-				_data.y -= 2;
+				_data.y -= _data.speed;
 			}
 		};
 
@@ -214,6 +217,10 @@ var Scene = function () {
 	this.beginRender = function () {
 		context.clear();
 	};
+
+	this.getCanvasWidthHeight = function () {
+		return canvas.width;
+	};
 };
 
 // Game Loop OBJECT
@@ -274,7 +281,10 @@ var gameLoop = function (initData) {
 			_gameData.mazeStatus.status = 'render';
 			_gameData.maze = new mazeGenerator(_gameData.mazeStatus.dimensions);
 			_gameData.scene = new Scene();
-			_gameData.player = new _gameData.scene.Player(_gameData.maze.getMaze());
+
+			// Create the player and their dimensions.
+			var playerDimensions = (_gameData.scene.getCanvasWidthHeight()/_gameData.maze.getMaze().length) - (_gameData.scene.getCanvasWidthHeight()/_gameData.maze.getMaze().length)*.2
+			_gameData.player = new _gameData.scene.Player(_gameData.maze.getMaze(), {width: playerDimensions, height: playerDimensions});
 			
 			_gameData.scene.init();
 		}
