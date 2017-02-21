@@ -280,6 +280,7 @@ var gameLoop = function (initData) {
 		if (_gameData.mazeStatus.status == 'create') {
 			_gameData.mazeStatus.status = 'render';
 			_gameData.maze = new mazeGenerator(_gameData.mazeStatus.dimensions);
+			console.log(_gameData.maze.findShortestPath());
 			_gameData.scene = new Scene();
 
 			// Create the player and their dimensions.

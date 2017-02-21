@@ -14,6 +14,7 @@ var mazeGenerator = function (dimensions) {
 				bottomW: true,
 				leftW: true,
 				partOfMaze_p: false,
+				partOfShortestPath: false,
 				isStart_p: false,
 				isEnd_p: false,
 				visited_p: false,
@@ -69,6 +70,71 @@ var mazeGenerator = function (dimensions) {
 
 		createFrontier(x, y);
 	}
+
+	this.parsePath = function (currentPath, dimensions) {
+		var pathFound_p = false;
+		var pathCache = [];
+		for (var ii = 0; ii < currentPath.legnth; ii = ii + 1) {
+			if (parseInt(currentPath[ii].split(',')[0])+1 == dimensions && parseInt(currentPath[ii].split(',')[1])+1 == dimensions) {
+				var startIndex = ii;
+			}
+		}
+		for (var ii = startIndex; ii > -1; ii = ii + 1) {
+			for (var jj = ii; jj > -1; jj = jj - 1) {
+				var possibleChoice = [];
+				var pointf1 = parseInt(currentPath[ii].split(',')[0]);
+				var pointf1 = parseInt(currentPath[ii].split(',')[1]);
+			}
+		}
+	};
+
+	this.findShortestPath = function(x=0, y=0, currentPath=[]) {
+		if (_maze[x][y].isEnd_p) {
+			currentPath.push(x + ',' + y);
+			return currentPath;
+		}
+
+		if (
+			(_maze[x][y].topW || currentPath.indexOf((x-1) + ',' + y) != -1) &&
+			(_maze[x][y].bottomW || currentPath.indexOf((x+1) + ',' + y) != -1) &&
+			(_maze[x][y].leftW || currentPath.indexOf(x + ',' + (y-1)) != -1) &&
+			(_maze[x][y].rightW || currentPath.indexOf(x + ',' + (y+1)) != -1)
+			) {
+
+				return false;
+		}
+		currentPath.push(x + ',' + y);
+		if (!_maze[x][y].topW && currentPath.indexOf((x-1) + ',' + y) == -1) {
+			var pathA = this.findShortestPath(x-1, y, currentPath);
+		}
+		else {
+			var pathA = false;
+		}
+		if (!_maze[x][y].bottomW && currentPath.indexOf((x+1) + ',' + y) == -1) {
+			var pathB = this.findShortestPath(x+1, y, currentPath);
+		}
+		else {
+			var pathB = false;
+		}
+		if (!_maze[x][y].leftW && currentPath.indexOf(x + ',' + (y-1)) == -1) {
+			var pathC = this.findShortestPath(x, y-1, currentPath);
+		}
+		else {
+			var pathC = false;
+		}
+		if (!_maze[x][y].rightW && currentPath.indexOf(x + ',' + (y+1)) == -1) {
+			var pathD = this.findShortestPath(x, y+1, currentPath);
+		}
+		else {
+			var pathD = false;
+		}
+
+		if (!pathA && !pathB && !pathC && !pathD) {
+			currentPath.splice(currentPath.indexOf(x + ',' + y), 1);
+		}
+
+		return (pathA || pathB || pathC || pathD);
+	};
 
 	function createFrontier(x, y) {
 		x = parseInt(x);
