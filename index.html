@@ -54,25 +54,44 @@
   <script src="gameLoop.js"></script>
 </head>
 <body>
-  <div class="main-container container">
-    <div class="row">
-      <div class="main-container-col col-lg-6">
-        <div  class="canvas-maze-container" >
-          <canvas id="canvas-main"></canvas>
+  <div class="main-container">
+    <div class="container">
+      <div class="main-row row">
+        <div class=col-lg-6>
+          <canvas id="canvas-main" width=600 height=600>
+            Your browser does not support HTML5!
+          </canvas>
         </div>
-      </div>
-      <div class="main-container-col col-lg-6">
-        <div class="nav-container">
-          
+        <div class=col-lg-6>
+          <div class="nav-container">
+            <div class="menu-header">
+              <h2>Maze Menu</h2>
+            </div>
+            <div class="menu-option-container">
+              <h3>Maze Sizes:</h3>
+              <ul>
+                <li><h3><a class="new-maze-link" mazesize="5" href="#">5x5</a></h3></li>
+                <li><h3><a class="new-maze-link" mazesize="10" href="#">10x10</a></h3></li>
+                <li><h3><a class="new-maze-link" mazesize="15" href="#">15x15</a></h3></li>
+                <li><h3><a class="new-maze-link" mazesize="20" href="#">20x20</a></h3></li>
+              </ul>
+              <p>Shortcuts:</p>
+              <ul>
+                <li>Toggle Hint - 'H'</li>
+                <li>Toggle Breadcrumbs - 'B'</li>
+                <li>Toggle Path to Finish - 'P'</li>
+                <li>Toggle Score - 'Y'</li>
+                <li>Move the player with: WASD/IJKL</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
   <script>
-      $(function () {
-          //
-          var maze = new mazeGenerator(10);
-      })
+  var gl = new gameLoop();
+  gl.init();
   </script>
 </body>
 </html>

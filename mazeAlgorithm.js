@@ -15,7 +15,7 @@ var mazeGenerator = function (dimensions) {
 				leftW: true,
 				partOfMaze_p: false,
 				isStart_p: false,
-				ifEnd_p: false,
+				isEnd_p: false,
 				visited_p: false,
 				color: 'teal'
 			});
