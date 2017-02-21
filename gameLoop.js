@@ -54,12 +54,13 @@ var Scene = function () {
 		//========================================/
 		var prevfillStyle = context.fillStyle;
 		context.fillStyle = "green";
-		context.fillRect(0, 0, wallLength, wallLength);
+		context.fillRect(wallLength*.2, wallLength*.2, wallLength*.6, wallLength*.6);
 		context.fillStyle = "red";
-		context.fillRect(canvas.width-wallLength, canvas.width-wallLength, canvas.width, canvas.width);
+		context.fillRect(canvas.width-wallLength+wallLength*.2, canvas.width-wallLength+wallLength*.2, wallLength*.6, wallLength*.6);
 		context.fillStyle = prevfillStyle;
 		//========================================/
 
+		// Paint the walls reflecting the maze generated in the mazeGenerator.
 		for (let ii = 0; ii < mazeDimensions; ii = ii + 1) {
 			for (let jj = 0; jj < mazeDimensions; jj = jj + 1) {
 				if (maze[ii][jj].topW) {
@@ -116,6 +117,7 @@ var gameLoop = function (initData) {
 		_gameData.previousTimestamp = initialTimestamp;
 		window.requestAnimationFrame(_gameLoop);
 	};
+
 	// ========================================================= //
 	//
 	// G A M E   L O O P
