@@ -81,7 +81,27 @@ var mazeGenerator = function (dimensions) {
 	};
 
 	this.setBreadCrumb = function (x, y) {
+		var score = 0;
+		if (!_maze[x][y].visited_p) {
+			if (_maze[x][y].partOfShortestPath_p) {
+				score = 5;
+			}
+			else {
+				if (
+					(_maze[x-1] && _maze[x-1][y].partOfShortestPath_p) ||
+					(_maze[x+1] && _maze[x+1][y].partOfShortestPath_p) ||
+					(_maze[x][y-1] && _maze[x][y-1].partOfShortestPath_p) ||
+					(_maze[x][y+1] && _maze[x][y+1].partOfShortestPath_p)
+				) {
+					score = -2;
+				}
+				else {
+					score = -5
+				}
+			}
+		}
 		_maze[x][y].visited_p = true;
+		return score;
 	};
 
 	this.findShortestPath = function (x=0, y=0, currentPath=[]) {

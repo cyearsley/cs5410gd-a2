@@ -10,7 +10,10 @@ var Scene = function () {
 	var context = canvas.getContext('2d');
 	var displayShortestPath_p = false;
 	var displayBreadCrumb_p = false;
+	var displayScore_p = false;
 	context.strokeStyle = "white";
+	context.font = "60px Sans-Serif";
+	context.fillStyle = "red";
 	CanvasRenderingContext2D.prototype.clear = function() {
         this.save();
         this.setTransform(1, 0, 0, 1, 0, 0);
@@ -62,12 +65,30 @@ var Scene = function () {
 		}
 	}
 
+	function DSS_P (toggle_p) {
+		if (toggle_p) {
+			displayScore_p = !displayScore_p;
+		}
+		else {
+			return displayScore_p;
+		}
+	}
+	this.drawScore = function (score=0) {
+		if (displayScore_p) {
+			context.fillText("Score: " + score, canvas.width/4,50);
+		}
+	};
+
 	window.addEventListener('keydown', function(event) {
 		if (event.key.toLowerCase() == 'p') {
 			DSP_P(true);
 		}
 		if (event.key.toLowerCase() == 'b') {
 			DBC_P(true);	
+		}
+		if (event.key.toLowerCase() == 'y') {
+			console.log("score");
+			DSS_P(true);	
 		}
 	});
 
@@ -91,7 +112,8 @@ var Scene = function () {
 			maze: maze,
 			currenti: 0,
 			currentj: 0,
-			speed: imageWidth*.1
+			speed: imageWidth*.1,
+			score: 0
 		}, pdata);
 		var Key = {
 			_pressed: {},
@@ -113,6 +135,15 @@ var Scene = function () {
 				delete this._pressed[event.keyCode];
 			}
 		};
+
+		this.score = function (val) {
+			if (val) {
+				_data.score += val;
+			}
+			else {
+				return _data.score;
+			}
+		}
 
 		this.getX = function () {
 			return _data.currenti;
@@ -151,7 +182,7 @@ var Scene = function () {
 			var cellCenterY = (_data.currenti)*wallLength+(wallLength/2);
 
 			if (pCenterX > (_data.currentj+1)*wallLength) {
-				_data.currentj = _data.currentj + 1
+				_data.currentj = _data.currentj + 1;
 			}	
 			if (pCenterX < (_data.currentj)*wallLength) {
 				_data.currentj = _data.currentj - 1;
@@ -401,10 +432,10 @@ var gameLoop = function (initData) {
 			
 			_gameData.scene.init();
 		}
-		if (_gameData.maze) {
+		if (_gameData.maze && _gameData.player) {
 			var i = _gameData.player.getY();
 			var j = _gameData.player.getX();
-			_gameData.maze.setBreadCrumb(i, j);
+			_gameData.player.score(_gameData.maze.setBreadCrumb(i, j));
 		}
 		if (_gameData.player) {
 			_gameData.player.update();
@@ -424,6 +455,9 @@ var gameLoop = function (initData) {
 		if (_gameData.scene) {
 			_gameData.scene.beginRender();
 			_gameData.scene.drawMaze(_gameData.maze.getMaze());
+			if (_gameData.player) {
+				_gameData.scene.drawScore(_gameData.player.score());
+			}
 
 			var spriteDimensions = (_gameData.scene.getCanvasWidthHeight()/_gameData.maze.getMaze().length) - (_gameData.scene.getCanvasWidthHeight()/_gameData.maze.getMaze().length)*.7
 			_gameData.scene.drawShortestPath(_gameData.maze.getMaze(), $.extend(_gameData.scene.sceneData, _gameData.scene.getDSP()), spriteDimensions, spriteDimensions);
