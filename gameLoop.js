@@ -9,6 +9,7 @@ var Scene = function () {
 	var canvas = $('#canvas-main')[0];
 	var context = canvas.getContext('2d');
 	var displayShortestPath_p = false;
+	var displayBreadCrumb_p = false;
 	context.strokeStyle = "white";
 	CanvasRenderingContext2D.prototype.clear = function() {
         this.save();
@@ -27,17 +28,19 @@ var Scene = function () {
 	this.sceneData = {
 		imageSP1: new Image(),
 		imageSP2: new Image(),
-		imageSP3: new Image()
+		imageSP3: new Image(),
+		imageBreadCrumb: new Image(),
+		breadCrumbRotation: 0
 	};
 
 	this.sceneData.imageSP1.src = 'shortestPath1.png';
 	this.sceneData.imageSP2.src = 'shortestPath2.png';
 	this.sceneData.imageSP3.src = 'shortestPath3.png';
+	this.sceneData.imageBreadCrumb.src = 'breadCrumb.png';
 
 	this.getDSP = function () {
 		return {'displayShortestPath_p': displayShortestPath_p};
 	}
-
 	function DSP_P (toggle_p) {
 		if (toggle_p) {
 			displayShortestPath_p = !displayShortestPath_p;
@@ -46,9 +49,25 @@ var Scene = function () {
 			return displayShortestPath_p;
 		}
 	}
+
+	this.getBreadCrumb = function () {
+		return {'displayBreadCrumb_p': displayBreadCrumb_p};
+	}
+	function DBC_P (toggle_p) {
+		if (toggle_p) {
+			displayBreadCrumb_p = !displayBreadCrumb_p;
+		}
+		else {
+			return displayBreadCrumb_p;
+		}
+	}
+
 	window.addEventListener('keydown', function(event) {
 		if (event.key.toLowerCase() == 'p') {
 			DSP_P(true);
+		}
+		if (event.key.toLowerCase() == 'b') {
+			DBC_P(true);	
 		}
 	});
 
@@ -93,6 +112,13 @@ var Scene = function () {
 			onKeyup: function(event) {
 				delete this._pressed[event.keyCode];
 			}
+		};
+
+		this.getX = function () {
+			return _data.currenti;
+		};
+		this.getY = function () {
+			return _data.currentj;
 		};
 
 		this.move = function (direction) {
@@ -267,6 +293,38 @@ var Scene = function () {
 		}
 	};
 
+	this.drawBreadCrumb = function (maze, data, width, height) {
+		if (data.displayBreadCrumb_p) {
+			var mazeDimensions = maze.length;
+			var wallLength = Math.floor(canvas.width/mazeDimensions);
+			for (var ii = 0; ii < maze.length; ii = ii + 1) {
+				for (var jj = 0; jj < maze[0].length; jj = jj + 1) {
+					if (maze[ii][jj].visited_p) {
+						context.save();
+
+						context.translate(ii*wallLength + wallLength/2, jj*wallLength + wallLength/2);
+						context.rotate(this.sceneData.breadCrumbRotation*Math.PI/180);
+						// this.sceneData.breadCrumbRotation += 5%180;
+						context.translate(-(ii*wallLength + wallLength/2), -(jj*wallLength + wallLength/2));
+						context.drawImage(
+							data.imageBreadCrumb,
+							ii*wallLength + wallLength/2 - width/2,
+							jj*wallLength + wallLength/2 - height/2,
+							width,
+							height
+						);
+
+						context.restore();
+					}
+				}
+			}
+		}
+	};
+
+	this.breadCrumbUpdate = function () {
+		this.sceneData.breadCrumbRotation += 20;
+	};
+
 	this.beginRender = function () {
 		context.clear();
 	};
@@ -343,8 +401,16 @@ var gameLoop = function (initData) {
 			
 			_gameData.scene.init();
 		}
+		if (_gameData.maze) {
+			var i = _gameData.player.getY();
+			var j = _gameData.player.getX();
+			_gameData.maze.setBreadCrumb(i, j);
+		}
 		if (_gameData.player) {
 			_gameData.player.update();
+		}
+		if (_gameData.scene) {
+			_gameData.scene.breadCrumbUpdate();
 		}
 	};
 
@@ -359,8 +425,9 @@ var gameLoop = function (initData) {
 			_gameData.scene.beginRender();
 			_gameData.scene.drawMaze(_gameData.maze.getMaze());
 
-			var spSpriteDimensions = (_gameData.scene.getCanvasWidthHeight()/_gameData.maze.getMaze().length) - (_gameData.scene.getCanvasWidthHeight()/_gameData.maze.getMaze().length)*.5
-			_gameData.scene.drawShortestPath(_gameData.maze.getMaze(), $.extend(_gameData.scene.sceneData, _gameData.scene.getDSP()), spSpriteDimensions, spSpriteDimensions);
+			var spriteDimensions = (_gameData.scene.getCanvasWidthHeight()/_gameData.maze.getMaze().length) - (_gameData.scene.getCanvasWidthHeight()/_gameData.maze.getMaze().length)*.7
+			_gameData.scene.drawShortestPath(_gameData.maze.getMaze(), $.extend(_gameData.scene.sceneData, _gameData.scene.getDSP()), spriteDimensions, spriteDimensions);
+			_gameData.scene.drawBreadCrumb(_gameData.maze.getMaze(), $.extend(_gameData.scene.sceneData, _gameData.scene.getBreadCrumb()), spriteDimensions, spriteDimensions);
 			_gameData.player.draw();
 		}
 	};

@@ -78,7 +78,11 @@ var mazeGenerator = function (dimensions) {
 			var y = parseInt(path[ii].split(',')[0]);
 			_maze[x][y].partOfShortestPath_p = true;
 		}
-	}
+	};
+
+	this.setBreadCrumb = function (x, y) {
+		_maze[x][y].visited_p = true;
+	};
 
 	this.findShortestPath = function (x=0, y=0, currentPath=[]) {
 		if (_maze[x][y].isEnd_p) {
