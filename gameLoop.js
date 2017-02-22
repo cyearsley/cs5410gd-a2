@@ -5,7 +5,7 @@ function isInteger(string) {
 	return /^\+?(0|[1-9]\d*)$/.test(string);
 }
 
-var Scene = function () {
+var Scene = function (timeStart) {
 	var canvas = $('#canvas-main')[0];
 	var context = canvas.getContext('2d');
 	var displayShortestPath_p = false;
@@ -24,6 +24,19 @@ var Scene = function () {
 		context.clearRect(0, 0, canvas.width, canvas.height);
 	};
 
+	this.displayFinish = function (data) {
+		var tempFont = context.font;
+		context.fillStyle = 'white';
+		context.fillText("Maze Complete!", 10, 50);
+		context.font = "30px Sans-Serif";
+		context.fillStyle = "red";
+		context.fillText("Player Name: " + data['Player Name'], 20, 120);
+		context.fillText("Score: " + data.Score, 20, 160);
+		context.fillText("Time: " + data.Time, 20, 200);
+		context.fillText("Maze Size: " + data['Maze Size'] + 'x' + data['Maze Size'], 20, 240);
+		context.font = tempFont;
+	}
+
 	this.beginRender = function () {
 		context.clear();
 	};
@@ -33,7 +46,8 @@ var Scene = function () {
 		imageSP2: new Image(),
 		imageSP3: new Image(),
 		imageBreadCrumb: new Image(),
-		breadCrumbRotation: 0
+		breadCrumbRotation: 0,
+		timeStart: timeStart
 	};
 
 	this.sceneData.imageSP1.src = 'shortestPath1.png';
@@ -378,6 +392,7 @@ var gameLoop = function (initData) {
 		}
 	}, initData);
 	var me = this;
+	var highScores = [];
 
 	$('.new-maze-link').on('click', function () {
 		_gameData.mazeStatus.status = 'create';
@@ -391,6 +406,23 @@ var gameLoop = function (initData) {
 		window.requestAnimationFrame(_gameLoop);
 	};
 
+	function finishRound (score, initialTime, finishingTime, mazeSize) {
+		highScores.push({
+			'Player Name': $('.player-name-input')[0].value,
+			Score: score,
+			Time: ((finishingTime-initialTime)/1000).toFixed(2) + ' seconds',
+			'Maze Size': mazeSize
+		});
+		for (var i = 0; i < highScores.length; i++) {
+			
+			console.log(highScores[i]);
+		}
+		_gameData.scene.beginRender();
+		_gameData.scene.displayFinish(highScores[highScores.length-1]);
+		_gameData.scene = null;
+		_gameData.maze = null;
+	}
+
 	// ========================================================= //
 	//
 	// G A M E   L O O P
@@ -401,7 +433,7 @@ var gameLoop = function (initData) {
 		_gameData.previousTimestamp = currentTimestamp;
 
 		// Call UPDATE
-		_update();
+		_update(currentTimestamp);
 
 		// Call RENDER
 		_render();
@@ -415,7 +447,7 @@ var gameLoop = function (initData) {
 	// U P D A T E
 	//
 	// ========================================================= //
-	var _update = function () {
+	var _update = function (currentTimestamp) {
 		if (_gameData.mazeStatus.status == 'render') {
 			_gameData.mazeStatus.status = 'pending';
 		}
@@ -424,7 +456,7 @@ var gameLoop = function (initData) {
 			_gameData.maze = new mazeGenerator(_gameData.mazeStatus.dimensions);
 			_gameData.maze.setShortestPath(_gameData.maze.findShortestPath())
 			console.log(_gameData.maze.findShortestPath());
-			_gameData.scene = new Scene();
+			_gameData.scene = new Scene(currentTimestamp);
 
 			// Create the player and their dimensions.
 			var playerDimensions = (_gameData.scene.getCanvasWidthHeight()/_gameData.maze.getMaze().length) - (_gameData.scene.getCanvasWidthHeight()/_gameData.maze.getMaze().length)*.2
@@ -436,6 +468,10 @@ var gameLoop = function (initData) {
 			var i = _gameData.player.getY();
 			var j = _gameData.player.getX();
 			_gameData.player.score(_gameData.maze.setBreadCrumb(i, j));
+
+			if (i == _gameData.maze.getMaze().length-1 && j == _gameData.maze.getMaze().length-1) {
+				finishRound(_gameData.player.score(), _gameData.scene.sceneData.timeStart, currentTimestamp, _gameData.maze.getMaze().length);
+			}
 		}
 		if (_gameData.player) {
 			_gameData.player.update();

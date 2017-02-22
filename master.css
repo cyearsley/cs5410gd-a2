@@ -49,10 +49,10 @@
 
 .menu-option-container {
     background-color: #FFF;
-    margin: 50px 100px;
+    margin: 10px 100px;
     border: solid black 3px;
     min-height: 300px;
-    padding: 20px 50px;
+    padding: 0 50px;
 }
 
 ul {
