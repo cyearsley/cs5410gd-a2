@@ -15,6 +15,7 @@ var mazeGenerator = function (dimensions) {
 				leftW: true,
 				partOfMaze_p: false,
 				partOfShortestPath_p: false,
+				dynamicPartOfShortestPath_p: false,
 				isStart_p: false,
 				isEnd_p: false,
 				visited_p: false,
@@ -71,12 +72,29 @@ var mazeGenerator = function (dimensions) {
 		createFrontier(x, y);
 	}
 
+	this.findCurrentShortestPath = function (x, y) {
+		var path = this.findShortestPath(x, y, []);
+		// reset the shortest path
+		for (var ii = 0; ii < _maze.length; ii = ii + 1) {
+			for (var jj = 0; jj < _maze[0].length; jj = jj + 1) {
+				_maze[ii][jj].dynamicPartOfShortestPath_p = false;
+			}
+		}
+		for (var ii = 0; ii < path.length; ii = ii + 1) {
+			// console.log(path[ii]);
+			var x = parseInt(path[ii].split(',')[1]);
+			var y = parseInt(path[ii].split(',')[0]);
+			_maze[x][y].dynamicPartOfShortestPath_p = true;
+		}
+	}
+
 	this.setShortestPath = function (path) {
 		for (var ii = 0; ii < path.length; ii = ii + 1) {
 			// console.log(path[ii]);
 			var x = parseInt(path[ii].split(',')[1]);
 			var y = parseInt(path[ii].split(',')[0]);
 			_maze[x][y].partOfShortestPath_p = true;
+			_maze[x][y].dynamicPartOfShortestPath_p = true;
 		}
 	};
 

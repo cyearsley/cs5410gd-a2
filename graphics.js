@@ -39,6 +39,7 @@ var Scene = function (timeStart) {
 		imageSP2: new Image(),
 		imageSP3: new Image(),
 		imageBreadCrumb: new Image(),
+		imageClue: new Image(),
 		breadCrumbRotation: 0,
 		timeStart: timeStart
 	};
@@ -47,6 +48,7 @@ var Scene = function (timeStart) {
 	this.sceneData.imageSP2.src = 'shortestPath2.png';
 	this.sceneData.imageSP3.src = 'shortestPath3.png';
 	this.sceneData.imageBreadCrumb.src = 'breadCrumb.png';
+	this.sceneData.imageClue.src = 'clue.png';
 
 	this.getDSP = function () {
 		return {'displayShortestPath_p': displayShortestPath_p};
@@ -313,7 +315,7 @@ var Scene = function (timeStart) {
 			var wallLength = Math.floor(canvas.width/mazeDimensions);
 			for (var ii = 0; ii < maze.length; ii = ii + 1) {
 				for (var jj = 0; jj < maze[0].length; jj = jj + 1) {
-					if (maze[ii][jj].partOfShortestPath_p) {
+					if (maze[ii][jj].dynamicPartOfShortestPath_p) {
 						context.save();
 
 						context.drawImage(
@@ -329,6 +331,10 @@ var Scene = function (timeStart) {
 				}
 			}
 		}
+	};
+
+	this.drawClue = function (maze, width, data, height) {
+
 	};
 
 	this.drawBreadCrumb = function (maze, data, width, height) {

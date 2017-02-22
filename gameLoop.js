@@ -98,6 +98,7 @@ var gameLoop = function (initData) {
 			var i = _gameData.player.getY();
 			var j = _gameData.player.getX();
 			_gameData.player.score(_gameData.maze.setBreadCrumb(i, j));
+			_gameData.maze.findCurrentShortestPath(j, i);
 
 			if (i == _gameData.maze.getMaze().length-1 && j == _gameData.maze.getMaze().length-1) {
 				finishRound(_gameData.player.score(), _gameData.scene.sceneData.timeStart, currentTimestamp, _gameData.maze.getMaze().length);
