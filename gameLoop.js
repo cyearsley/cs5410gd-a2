@@ -128,6 +128,7 @@ var gameLoop = function (initData) {
 
 			var spriteDimensions = (_gameData.scene.getCanvasWidthHeight()/_gameData.maze.getMaze().length) - (_gameData.scene.getCanvasWidthHeight()/_gameData.maze.getMaze().length)*.7
 			_gameData.scene.drawShortestPath(_gameData.maze.getMaze(), $.extend(_gameData.scene.sceneData, _gameData.scene.getDSP()), spriteDimensions, spriteDimensions);
+			_gameData.scene.drawClue(_gameData.maze.getMaze(), $.extend(_gameData.scene.sceneData, _gameData.scene.getClue()), spriteDimensions, spriteDimensions);
 			_gameData.scene.drawBreadCrumb(_gameData.maze.getMaze(), $.extend(_gameData.scene.sceneData, _gameData.scene.getBreadCrumb()), spriteDimensions, spriteDimensions);
 			_gameData.player.draw();
 		}

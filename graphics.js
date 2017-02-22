@@ -4,6 +4,7 @@ var Scene = function (timeStart) {
 	var displayShortestPath_p = false;
 	var displayBreadCrumb_p = false;
 	var displayScore_p = false;
+	var displayClue_p = false;
 	context.strokeStyle = "white";
 	context.font = "60px Sans-Serif";
 	context.fillStyle = "red";
@@ -74,6 +75,18 @@ var Scene = function (timeStart) {
 		}
 	}
 
+	this.getClue = function () {
+		return {'displayClue_p': displayClue_p};
+	};
+	function DC_P (toggle_p) {
+		if (toggle_p) {
+			displayClue_p = !displayClue_p;
+		}
+		else {
+			return displayBrdisplayClue_p;
+		}
+	}
+
 	function DSS_P (toggle_p) {
 		if (toggle_p) {
 			displayScore_p = !displayScore_p;
@@ -98,6 +111,9 @@ var Scene = function (timeStart) {
 		if (event.key.toLowerCase() == 'y') {
 			console.log("score");
 			DSS_P(true);	
+		}
+		if (event.key.toLowerCase() == 'h') {
+			DC_P(true);
 		}
 	});
 
@@ -309,10 +325,43 @@ var Scene = function (timeStart) {
 		}
 	};
 
+	this.drawClue = function (maze, data, width, height) {
+		var mazeDimensions = maze.length;
+		var wallLength = Math.floor(canvas.width/mazeDimensions);
+		if (data.displayClue_p) {
+			console.log("testing");
+			var clueCount = 0;
+			for (var ii = 0; ii < maze.length; ii = ii + 1) {
+				if (clueCount >= 1) {
+					break;
+				}
+				for (var jj = 0; jj < maze[0].length; jj = jj + 1) {
+					if (maze[ii][jj].dynamicPartOfShortestPath_p) {
+						if (clueCount >= 1) {
+							context.save();
+
+							context.drawImage(
+								data['imageClue'],
+								ii*wallLength + wallLength/2 - width/2,
+								jj*wallLength + wallLength/2 - height/2,
+								width,
+								height
+							);
+
+							context.restore();
+							break;
+						}
+						clueCount++;
+					}
+				}
+			}
+		}
+	};
+
 	this.drawShortestPath = function (maze, data, width, height) {
+		var mazeDimensions = maze.length;
+		var wallLength = Math.floor(canvas.width/mazeDimensions);
 		if (data.displayShortestPath_p) {
-			var mazeDimensions = maze.length;
-			var wallLength = Math.floor(canvas.width/mazeDimensions);
 			for (var ii = 0; ii < maze.length; ii = ii + 1) {
 				for (var jj = 0; jj < maze[0].length; jj = jj + 1) {
 					if (maze[ii][jj].dynamicPartOfShortestPath_p) {
@@ -331,10 +380,6 @@ var Scene = function (timeStart) {
 				}
 			}
 		}
-	};
-
-	this.drawClue = function (maze, width, data, height) {
-
 	};
 
 	this.drawBreadCrumb = function (maze, data, width, height) {
